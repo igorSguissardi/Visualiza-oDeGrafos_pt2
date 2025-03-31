@@ -1,0 +1,50 @@
+/* Geral */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #333; /* Cor do fundo */
+}
+
+#container {
+    display: flex;
+    flex-direction: column; /* Alinha as linhas em coluna */
+    gap: 40px; /* Espaçamento entre as linhas de bolas e triângulos */
+}
+
+/* Cada linha */
+.row {
+    display: flex; /* Torna a linha uma flexbox */
+    flex-wrap: wrap;  /* Permite quebra de linha caso necessário */
+    justify-content: center; /* Centraliza os elementos na linha */
+    align-items: center; /* Alinha verticalmente os SVGs ao centro */
+    gap: 30px; /* Espaçamento lateral entre elementos */
+}
+
+/* Cada wrapper de SVG */
+.svg-wrapper {
+    width: 50px; /* Largura padrão do box */
+    height: 50px; /* Altura padrão do box */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent; /* Sem fundo */
+}
+
+/* SVG ajustado para ocupar todo o box */
+.svg-wrapper svg {
+    width: 100%; /* O SVG preenche toda a largura do wrapper */
+    height: 100%; /* O SVG preenche toda a altura do wrapper */
+}
+
+/* Trocar estilos por linha */
+.balls-row .svg-wrapper svg {
+    fill: #00aaff; /* Cor azul para bolas */
+}
+
+.triangles-row .svg-wrapper svg {
+    fill: #666; /* Cor cinza para triângulos */
+}
