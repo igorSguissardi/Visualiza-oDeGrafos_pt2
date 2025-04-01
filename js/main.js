@@ -16,7 +16,7 @@ function loadSVGs() {
     }
 
     const ballsRow = container.append("div").attr("class", "row balls-row");
-    const trianglesRow = container.append("div").attr("class", "row triangles-row");
+    const trianglesRow = container.append("div").attr("class", "row triangles-row").style("margin-top", "-350px");
 
     svgFiles.forEach((file, index) => {
         const isBall = file.includes("bola"); 
@@ -47,12 +47,190 @@ function loadSVGs() {
 // Chama a função para carregar os SVGs
 document.addEventListener("DOMContentLoaded", loadSVGs);
 
-function addInteractivity() {
-    console.log("Adicionando interatividade");
-    // ... (mantenha o resto da função como está)
+function animateTriangles() {
+    console.log("Iniciando animação dos triângulos");
+
+    // Variável para armazenar os estados dos triângulos (controla cancelamentos)
+    const triangleStates = {};
+
+    // Seleciona todos os triângulos e bolas
+    const triangles = d3.selectAll(".triangles-row .svg-wrapper");
+    const balls = d3.selectAll(".balls-row .svg-wrapper");
+
+    // Verifique se o número de triângulos e bolas corresponde
+    if (triangles.size() !== balls.size()) {
+        console.error("O número de triângulos não corresponde ao número de bolas!");
+        return;
+    }
+
+    // Função para animar a descida de um triângulo
+    function descendTriangle(triangle, ball, index) {
+        // Cancela a descida se o estado de cancelamento estiver ativo
+        if (triangleStates[index]?.canceled) {
+            triangle
+                .transition()
+                .duration(500)
+                .style("transform", "translateY(0px)")
+                .on("end", () => {
+                    console.log(`Triângulo ${index} voltou à posição original`);
+                    triangleStates[index].canceled = false; // Reseta o estado após o retorno
+                    loopAnimation(index); // Reinsere o triângulo no loop normal
+                });
+            return;
+        }
+
+        // Calcula a posição vertical ajustada para parar na borda da bolinha
+        const ballY = ball.getBoundingClientRect().top;
+        const triangleY = triangle.node().getBoundingClientRect().top;
+
+        const triangleHeight = triangle.node().getBoundingClientRect().height;
+        const ballHeight = ball.getBoundingClientRect().height;
+        const deltaY = ballY - triangleY - (ballHeight / 2) + (triangleHeight / 2);
+
+        // Adiciona um atraso aleatório para criar variação
+        const randomDelay = Math.random() * 2000;
+
+        // Desce o triângulo com D3.js
+        triangle
+            .transition()
+            .delay(randomDelay)
+            .duration(1000) // Duração da descida
+            .style("transform", `translateY(${deltaY}px)`)
+            .on("end", () => {
+                console.log(`Triângulo ${index} completou a descida.`);
+                if (!triangleStates[index]?.canceled) {
+                    // Recomeça o loop apenas se o triângulo não foi cancelado
+                    loopAnimation(index);
+                }
+            });
+    }
+
+    // Função para iniciar/repetir a animação em loop para um triângulo específico
+    function loopAnimation(index) {
+        const triangle = d3.select(triangles.nodes()[index]);
+        const ball = balls.nodes()[index];
+        descendTriangle(triangle, ball, index);
+    }
+
+    // Configurar interação para as bolas para cancelar temporariamente a descida
+    balls.each(function (_, index) {
+        const ball = d3.select(this);
+        const triangle = d3.select(triangles.nodes()[index]);
+
+        // Inicializa o estado dos triângulos
+        triangleStates[index] = { canceled: false };
+
+        // Adiciona evento de clique para cancelar o movimento do triângulo
+        ball.on("click", () => {
+            console.log(`Cancelando descida do triângulo ${index}`);
+            triangleStates[index].canceled = true; // Marca o triângulo para interrupção
+        });
+    });
+
+    // Inicializa o loop para todos os triângulos
+    triangles.each(function (_, index) {
+        loopAnimation(index);
+    });
 }
 
+// Chama a função para iniciar a movimentação dos triângulos
+setTimeout(animateTriangles, 50);
 
+function animateTriangles() {
+    console.log("Iniciando animação dos triângulos");
+
+    // Variável para armazenar os estados dos triângulos (controla cancelamentos)
+    const triangleStates = {};
+
+    // Seleciona todos os triângulos e bolas
+    const triangles = d3.selectAll(".triangles-row .svg-wrapper");
+    const balls = d3.selectAll(".balls-row .svg-wrapper");
+
+    // Verifica se o número de triângulos e bolas corresponde
+    if (triangles.size() !== balls.size()) {
+        console.error("O número de triângulos não corresponde ao número de bolas!");
+        return;
+    }
+
+    // Função para animar a descida de um triângulo
+    function descendTriangle(triangle, ball, index) {
+        // Cancela a descida se o estado de cancelamento estiver ativo
+        if (triangleStates[index]?.canceled) {
+            return; // Se está cancelado, não executa a descida
+        }
+
+        // Calcula a posição vertical ajustada para parar na borda da bolinha
+        const ballY = ball.getBoundingClientRect().top;
+        const triangleY = triangle.node().getBoundingClientRect().top;
+
+        const triangleHeight = triangle.node().getBoundingClientRect().height;
+        const ballHeight = ball.getBoundingClientRect().height;
+        const deltaY = ballY - triangleY - (ballHeight / 2) + (triangleHeight / 2);
+
+        // Adiciona um atraso aleatório para criar variação
+        const randomDelay = Math.random() * 2000;
+
+        // Desce o triângulo com D3.js
+        triangle
+            .transition()
+            .delay(randomDelay) // Aplica atraso
+            .duration(1000) // Duração da descida
+            .style("transform", `translateY(${deltaY}px)`)
+            .on("end", () => {
+                console.log(`Triângulo ${index} completou a descida.`);
+
+                if (!triangleStates[index]?.canceled) {
+                    // Recomeça o loop apenas se o triângulo não foi cancelado
+                    loopAnimation(index);
+                }
+            });
+    }
+
+    // Função para iniciar/repetir a animação em loop para um triângulo específico
+    function loopAnimation(index) {
+        const triangle = d3.select(triangles.nodes()[index]);
+        const ball = balls.nodes()[index];
+        descendTriangle(triangle, ball, index);
+    }
+
+    // Configurar interação para as bolas para cancelar temporariamente a descida
+balls.each(function (_, index) {
+    const ball = d3.select(this);
+    const triangle = d3.select(triangles.nodes()[index]);
+
+    // Inicializa o estado dos triângulos
+    triangleStates[index] = { canceled: false };
+
+    // Adiciona evento de clique à bolinha
+    ball.on("click", () => {
+        console.log(`Cancelando descida do triângulo ${index}`);
+        triangleStates[index].canceled = true; // Marca o triângulo para interrupção
+        
+        // Anima o triângulo de volta à posição original
+        triangle
+            .transition()
+            .duration(500) // Duração para o retorno ao topo
+            .style("transform", "translateY(0px)")
+            .on("end", () => {
+                console.log(`Triângulo ${index} retornou ao topo`);
+                
+                // Reabilita o triângulo para reentrar no loop
+                triangleStates[index].canceled = false;
+
+                // Reinicia o loop do triângulo
+                loopAnimation(index);
+            });
+    });
+});
+
+    // Inicializa o loop para todos os triângulos
+    triangles.each(function (_, index) {
+        loopAnimation(index);
+    });
+}
+
+// Chama a função para iniciar a movimentação dos triângulos
+setTimeout(animateTriangles, 500);
 
 function addInteractivity() {
     console.log("Adicionando interatividade");
@@ -67,14 +245,6 @@ function addInteractivity() {
             .duration(300)
             .style("transform", "scale(1)");
       })
-      .on("click", function() {
-          d3.select(this).transition()
-            .duration(500)
-            .style("opacity", 0)
-            .transition()
-            .duration(500)
-            .style("opacity", 1);
-      });
 
     // Adiciona zoom
     const zoom = d3.zoom()
@@ -93,3 +263,4 @@ function addInteractivity() {
 
 // Chama a função para adicionar interatividade após carregar os SVGs
 setTimeout(addInteractivity, 1000);
+
