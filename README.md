@@ -1,0 +1,7 @@
+# Bolinhas e Triângulos - Igor Sguissardi
+
+&emsp;A ponderada "bolinhas e triângulos" é uma aplicação interativa que combina movimento e dinâmica visual em uma interface simples e divertida. 
+
+&emsp;No início, pequenos triângulos começam a cair em direção às bolinhas localizadas logo abaixo. A interação consiste em passar o mouse pelass bolinhas para fazer com que o triângulo correspondente retorne ao topo, interrompendo a sua queda, mas permitindo que ele volte a cair quando a tela for recarregada. Isso cria uma brincadeira em que o objetivo é não deixar os triângulos atingirem completamente as bolinhas, garantindo uma experiência interessante.
+
+&emsp;Além disso, a aplicação oferece ainda mais possibilidades de interação, permitindo que o usuário mova as bolinhas pela tela ou aplique zoom in e zoom out (para utilizar o zoom, mova o scroll do mouse enquanto você segura os elementos), criando liberdade para formar desenhos e explorar diferentes configurações artísticas enquanto interage com os elementos. A simplicidade do conceito, combinada às funcionalidades de movimento, clique e zoom, transforma o "bolinhas e triângulos" em uma experiência atraente tanto para distração quanto para criatividade visual.

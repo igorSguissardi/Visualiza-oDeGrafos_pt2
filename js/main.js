@@ -232,6 +232,8 @@ balls.each(function (_, index) {
 // Chama a função para iniciar a movimentação dos triângulos
 setTimeout(animateTriangles, 500);
 
+
+
 function addInteractivity() {
     console.log("Adicionando interatividade");
     d3.selectAll(".svg-wrapper")
@@ -264,3 +266,58 @@ function addInteractivity() {
 // Chama a função para adicionar interatividade após carregar os SVGs
 setTimeout(addInteractivity, 1000);
 
+function addBrush() {
+    console.log("Adicionando funcionalidade de brush");
+
+    const svgBrush = d3.select("#container")
+        .append("svg")
+        .attr("class", "brush-area")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .style("position", "absolute")
+        .style("top", "0")
+        .style("left", "0")
+        .style("z-index", "10")
+        .style("pointer-events", "none"); // Inicialmente desabilitamos os eventos
+
+    // Define o comportamento do brush
+    const brush = d3.brush()
+        .extent([[0, 0], [window.innerWidth, window.innerHeight]]) // Área cobrindo toda a tela
+        .on("start brush end", brushed);
+
+    const brushLayer = svgBrush.append("g")
+        .attr("class", "brush")
+        .call(brush);
+
+    // Habilita "pointer-events" apenas quando o usuário está interagindo com o brush
+    brushLayer
+        .select(".overlay")
+        .style("pointer-events", "all") // Ativa o brush
+        .style("cursor", "crosshair");
+
+    // Função que lida com os elementos selecionados
+    function brushed(event) {
+        const selection = event.selection;
+
+        if (selection) {
+            const [[x0, y0], [x1, y1]] = selection;
+
+            // Seleciona os triângulos e bolinhas
+            d3.selectAll(".triangles-row .svg-wrapper, .balls-row .svg-wrapper")
+                .classed("highlighted", function () {
+                    const element = this.getBoundingClientRect();
+                    const isInside =
+                        element.left >= x0 &&
+                        element.right <= x1 &&
+                        element.top >= y0 &&
+                        element.bottom <= y1;
+
+                    // Adiciona/remova a classe "highlighted" dependendo da área selecionada
+                    return isInside;
+                });
+        } else {
+            // Limpa a seleção caso o brush seja reiniciado
+            d3.selectAll(".svg-wrapper").classed("highlighted", false);
+        }
+    }
+}
